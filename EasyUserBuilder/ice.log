@@ -1,0 +1,6 @@
+Import Convert Export utility for Novell eDirectory 8.6.0 version: 10110.03e
+Copyright 2001 Novell, Inc. All rights reserved.
+Source Handler: ICE LDIF handler for Novell eDirectory 8.6.0 version: 10110.03e
+Destination Handler: ICE LDAP handler for Novell eDirectory 8.6.0 version: 10110.03e
+ldapssl_client_init failed: -1 der file: F:\Public\Rootcert.der
+You may type 'ice' to see the command line help.

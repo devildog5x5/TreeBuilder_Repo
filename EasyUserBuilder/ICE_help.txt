@@ -1,0 +1,103 @@
+Import Convert Export utility for Novell eDirectory 8.6.0 version: 10110.03e
+Copyright 2001 Novell, Inc. All rights reserved.
+ice [<general ops>]  (All options are case sensitive)
+      -S <source handler> <src subops> -D <destination handler> <dest subops>
+
+   General options:
+      [-e <error ldif file>] specify the LDIF output file for failed records
+      [-o]                   overwrite the existing log file
+      [-l <log file>]        specify the log file
+      [-v]                   run in verbose mode
+      [-c <URL>]             creation rules ( URL = 'file://<file>' )
+      [-s <URL>]             schema rules
+      [-p <URL>]             placement rules
+      [-h] or [-?]           command line help.
+
+  -S <source handler> only one source handler may be selected
+    Available source handlers and subops
+      LDAP (ICE LDAP handler for Novell eDirectory 8.6.0 version: 10110.03e)
+        From Server:
+          [-s <server>] default: local host
+          [-p <port>]   default: 389
+          [-d <user>]   default: anonymous bind
+          [-w <passwd>] default: the empty string
+          [-F <value>]  RFC-1558 compliant LDAP search filter
+                        (default: objectclass=*)
+          [-n]          display search operation, but do not perform
+          [-a <value>]  comma-separated list of attributes to include
+                1.1        -- entry names only (don't get attributes)
+                *          -- all user attributes
+                empty list -- all user attributes (default)
+          [-R]          do not automatically follow referrals
+          [-e <value>]  set LDAP debugging level
+          [-b <value>]  base DN for search (default: the empty string)
+          [-c <value>]  search scope: base, one, or sub (default: one)
+          [-r <value>]  alias dereferencing: never, always, search, or
+                                             find (default: never)
+          [-l <value>]  maximum time for search in seconds (0 = no limit)
+          [-z <value>]  maximum size for search in entries (0 = no limit)
+          [-V <value>]  protocol version: 2 or 3 (default: 3)
+          [-v]          run in verbose mode
+          [-L <value>]  DER file containing server key for SSL communication
+          [-A]          retrieve attribute names only (no values)
+          [-o <value>]  comma separated list of attributes to exclude
+          [-t]          prevent the LDIF handler from stopping on errors
+          [-m]          the LDAP operations will be modifies
+          [-x]          the LDAP operations will be deletes
+      LDIF (ICE LDIF handler for Novell eDirectory 8.6.0 version: 10110.03e)
+        From File:
+          -f <filename>
+          [-a]          add records without a change type specified
+          [-c]          prevent the LDIF handler from stopping on errors
+          [-n]          display operations, but don't actually do them
+          [-v]          run in verbose mode
+          [-m]          the LDAP operations will be modifies
+          [-x]          the LDAP operations will be deletes
+      DELIM        From File:
+          -f <filename>
+          [-F <value>] file containing the data order(comma seperated) - you mus
+t specify this option or -t below
+          [-t <value>] comma seperated list of attributes of the data order - yo
+u must specify this option or -F above
+          [-c] continue after an error
+          [-n <value>] use this naming attribute for the rdn or dn in data
+          [-l <value>] path to append rdn in
+          [-v] run in verbose mode
+          [-o <value>] comma seperated list of additional objectclasses (default
+ is inetorgperson)
+          [-i <value>] comma seperated list of columns of data to skip
+          [-d <value>] specify the delimiter (default is ',')
+          [-q <value>] specify the secondary delimiter (default is '"')
+
+  -D <destination handler> only one destination handler may be selected
+   Available destination handlers and subops
+     LDAP (ICE LDAP handler for Novell eDirectory 8.6.0 version: 10110.03e)
+       To Server:
+         [-s <server>] default: local host
+         [-p <port>]   default: 389
+         [-d <user>]   default: anonymous bind
+         [-w <passwd>] default: the empty string
+         [-e <value>]  set LDAP debugging level
+         [-V <value>]  protocol version: 2 or 3 (default: 3)
+         [-v]          run in verbose mode
+         [-B]          disable LBURP
+         [-F]          allow forward references
+         [-l]          add simple/hashed passwords
+         [-L <value>]  DER file containing server key for SSL communication
+     LDIF (ICE LDIF handler for Novell eDirectory 8.6.0 version: 10110.03e)
+       To File:
+         -f <filename>
+         [-v]          run in verbose mode
+         [-B]          do not suppress printing of binary values
+         [-b]          do no base 64 encode LDIF data
+     DELIM        To File:
+         -f <filename>
+         [-v] run in verbose mode
+         [-F <value>] file containing the data order(comma seperated) - you mus
+ specify this option or -t below
+         [-t <value>] comma seperated list of attributes of the data order - yo
+ must specify this option or -F above
+         [-l <value>] put the entire dn in the data
+         [-d <value>] specify the delimiter (default is ',')
+         [-q <value>] specify the secondary delimiter (default is '"')
+         [-n <value>] include the naming attribute in rdn

@@ -1,0 +1,1 @@
+WARNING: Depending on the number of users you have selected, this could be a large file (approx. 5 MB per 10,000). If you open the file with word or wordpad and manipulate date, make suer you save it in ACCII text format.
