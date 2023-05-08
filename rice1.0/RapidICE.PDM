@@ -1,0 +1,130 @@
+[Root]
+Most Recent Package=RapidICE
+
+
+[Package|RapidICE|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\setup
+
+[Package|RapidICE|Configure DAO ISAMs]
+Applicable=No
+
+[Package|RapidICE|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|RapidICE|Files Found]
+
+[Package|RapidICE|Files Released]
+
+[Package|RapidICE|Missing Dependency Information]
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.exe=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\icenativ.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldaphdlr.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapsdk.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapssl.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapx.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldif.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\legacylogin.dll=
+
+[Package|RapidICE|Out-of-Date Dependency Information]
+
+[Package|RapidICE|Files Added]
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.exe=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\icenativ.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldaphdlr.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapsdk.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapssl.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapx.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldif.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\legacylogin.dll=
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.cfg=
+
+[Package|RapidICE|Files Removed]
+
+[Package|RapidICE|Files In Project]
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\RapidICE.exe=Yes
+C:\WINNT\SYSTEM32\MSVBVM60.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINNT\SYSTEM32\comdlg32.ocx=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\SYSTEM32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.exe=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\icenativ.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldaphdlr.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapsdk.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapssl.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapx.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldif.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\legacylogin.dll=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.cfg=Yes
+
+[Package|RapidICE|Configure Registry Files]
+Applicable=No
+
+[Package|RapidICE|Configure Remote Servers]
+Applicable=No
+
+[Package|RapidICE|Install Locations]
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\RapidICE.exe=$(AppPath)
+C:\WINNT\SYSTEM32\MSVBVM60.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINNT\SYSTEM32\comdlg32.ocx=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\SYSTEM32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.exe=$(AppPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\icenativ.dll=$(AppPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldaphdlr.dll=$(AppPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapsdk.dll=$(WinSysPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapssl.dll=$(WinSysPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldapx.dll=$(WinSysPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldif.dll=$(AppPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\legacylogin.dll=$(WinSysPath)
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.cfg=$(AppPath)
+
+[Package|RapidICE|Configure Shared Files]
+Applicable=Yes
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\RapidICE.exe=No
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.exe=No
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\icenativ.dll=No
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldaphdlr.dll=No
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ldif.dll=No
+I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\ice.cfg=No
+
+[Package|RapidICE|Distribution]
+Type=single
+Size=1.44 MB
+Title=RapidICE
+
+[Package|RapidICE|IconGroups]
+Group0=RapidICE
+PrivateGroup0=-1
+Parent0=$(Programs)
+
+[Package|RapidICE|RapidICE]
+Icon1=RapidICE.exe
+Title1=RapidICE
+StartIn1=$(AppPath)
+Key1=Icon1
+
+[Package|RapidICE|Package]
+PackageFolder=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\setup
+ProjectFolder=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0
+ServerSideCab=
+File1=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\setup\setup.exe
+File2=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\setup\Setup.Lst
+File3=I:\d_drive\1robert\Utils\1tools\user_creation_tool\rice1.0\setup\RapidICE.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz
