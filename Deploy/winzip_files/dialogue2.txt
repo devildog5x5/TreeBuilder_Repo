@@ -1,0 +1,5 @@
+The purpose of this tool is to automate user logins
+rapidly and with ease.
+Novell System Test...Helping Novell engineers write 
+software so reliable, so robust, so incredibly fast...
+It kicks EVERYONE'S BUTT!!! Novell Rocks!!!

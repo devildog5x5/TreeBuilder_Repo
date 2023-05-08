@@ -1,0 +1,4 @@
+CSVFile.exe
+This tool allow quick and easy creation of a user group or any comma delimited text file.
+It is intended to be used to create the .dat files used with LoadRunner, specifically for
+User authentication. It will create up to 6 sets of users in a comma delimited text file.

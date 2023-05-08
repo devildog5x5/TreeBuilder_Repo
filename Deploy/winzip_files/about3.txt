@@ -1,0 +1,7 @@
+Directory Exerciser Manager Version 1.1 Written by: Robert M. Foster
+Phone: 801.861.2449
+Email:robert_foster@novell.com
+DirExer.exe and DirExerCtrl.exe Written by: Jarom Loveridge
+Phone: 801.861.4489
+Email:JLoveridge@novell.com
+
