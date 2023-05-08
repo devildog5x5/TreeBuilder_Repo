@@ -1,0 +1,269 @@
+// Public AS code -- can be called by the developer's javascript.  Developer must create
+// an object which contains the following member variables.  Every variable must be defined
+// in the structure.
+
+function doDynamicAS(userContext, AS)
+{
+   //make sure we have an entry for the required parameters
+   if ( (AS.types!=null || AS.typesCallBack) &&         //do we have a valid type or type callback
+        (AS.control!=null || AS.controlCallBack) )  //do we have a control or callback to handle results
+   {
+      //make sure we at least have default values for all parameters
+      if (AS.types==null)                       AS.types="";
+      if (AS.typesCallBack==null)               AS.typesCallBack="";
+      if (AS.control==null)                     AS.control="";
+      if (AS.controlCallBack==null)             AS.controlCallBack="";
+      if (AS.initialCriteria==null)             AS.initialCriteria="";
+      if (AS.initialCriteriaCallBack==null)     AS.initialCriteriaCallBack="";
+      if (AS.isASAllowed==null)                 AS.isASAllowed="";
+      if (AS.typeInfoCallBack==null)            AS.typeInfoCallBack="";
+      if (AS.validateSyntax==null)              AS.validateSyntax="";
+
+      //is window being sized dynamically?
+      if (AS.windowWidth!=null)   window.asWidth=AS.windowWidth;
+      if (AS.windowHeight!=null)  window.asHeight=AS.windowHeight;
+
+      //are the widths of the input well being sized dynamically?
+      if (AS.attributeWidth!=null)  window.asAPercent=AS.attributeWidth;
+      if (AS.operationWidth!=null)  window.asOPercent=AS.operationWidth;
+      if (AS.valueWidth!=null)      window.asVPercent=AS.valueWidth;
+
+      //call the private doAS routine
+      doAS(userContext,
+           AS.types,
+           AS.typesCallBack,
+           AS.control,
+           AS.controlCallBack,
+           AS.initialCriteria,
+           AS.initialCriteriaCallBack,
+           AS.isASAllowed,
+           AS.typeInfoCallBack,
+           AS.validateSyntax);
+   }
+}
+
+// Private AS code -- not intended for eMFrame developer use.
+// The following APIs are not public and are subject to change without notice.
+
+function doAS( userContext,         // user session context info
+               types,               // types for which criterion can be set, or
+               typesCallBack,       // routine that will return types for which criterion can be set
+               control,             // HTML control that will receive xml criterion, or
+               controlCallBack,     // routine to process final selection criterion
+               initialCriteria,     // opt - initial xml definition of selection criterion
+               initCritCallBack,    // opt - routine to retrieve initial criterion
+               isASAllowed,         // opt - routine to determine if Advanced Selection widget should run at all
+               typeInfoCallBack,    // opt - java routine that will return a AdvSelTypeInfo class with type/syntax/op/value info
+               validateSyntax)      // opt - javascript routine to verify user input conforms to syntax rules
+{
+   var doAS=true;   //assume we will be running the advanced selection widget
+   if (exists(isASAllowed))
+   {
+      //execute specified routine to determine if search should proceed
+      doAS=eval(isASAllowed+"()");
+   }
+
+   if (doAS)
+   {
+      //retrieve types from types callback, if callback is specified
+      if (exists(typesCallBack))
+      {
+         types=eval(typesCallBack+"()");
+      }
+
+      if (types==null)              types="";
+      if (control==null)            control="";
+      if (controlCallBack==null)    controlCallBack="";
+
+      //make we have a type and a place to put the results
+      if  ( types.length>0 )
+      {
+         //should we retrieve initial criterion from criterion callback?
+         if (exists(initCritCallBack))
+         {
+            var command = initCritCallBack+"(types)";
+            initialCriteria = eval(command);
+            if (initialCriteria==null)
+            {
+               initialCriteria="";
+            }
+         }
+
+         var urlParms = "&User.context="+userContext+
+                        "&AS.Types="+urlEncode(types)+
+                        "&AS.InitialCriteria="+urlEncode(initialCriteria)+
+                        "&AS.Control="+urlEncode(control)+
+                        "&AS.ControlCallBack="+controlCallBack+
+                        "&AS.TypeInfoCallBack="+typeInfoCallBack+
+                        "&AS.ValidateSyntax="+validateSyntax;
+
+         var url = 'webacc?taskId=fw.AdvancedSelection&merge=fw.AdvSel&error=dev.GenErr&nextState=initialState&onComplete=close'+urlParms;
+         var leftPos = (screen.availWidth-window.asWidth)/2;
+         var topPos =  (screen.availHeight-window.asHeight)/3;
+         var winOpts = 'toolbar=no,location=no,directories=no,menubar=no,scrollbars=no,resizable=yes,left='+leftPos+',top='+topPos+',width='+window.asWidth+',height='+window.asHeight;
+         var w = window.open( url, 'AdvancedSelectionWindow', winOpts);
+         if (w != null)
+         {
+            // make sure the new advanced selection window has focus.
+            w.focus();
+         }
+      }
+      else
+      {
+         alert("doAS: ERROR -- No type parameter."+
+               "\n\nEnter the type of object for which selection criterion is to be entered.") ;
+      }
+   }
+}
+
+function returnFromAS(asControl, asCallBack, asTypes, asCriteria)
+{
+   //alert("returnFromAS: control="+asControl+"\ncallback="+asCallBack+"\ntypes="+asTypes+"\ncriteria="+asCriteria);
+   if (arguments.length==0)
+   {
+      return;  //no parameters -- nothing to do
+   }
+
+   //make sure parameters aren't null
+   if (asControl==null)    asControl="";
+   if (asCallBack==null)   asCallBack="";
+   if (asTypes==null)      asTypes="";
+   if (asCriteria==null)   asCriteria="";
+
+   if ( (asControl.length==0 && asCallBack.length==0) )     //no place to send the result?
+   {
+      alert("returnFromAS:  ERROR -- Neither a control nor a controlCallBack routine has been specified."+
+            "\n\nCannot return the '"+asTypes+"' selection criterion = "+asCriteria);
+      return;  //just return
+   }
+
+   //process the selection criteria that has been returned
+   if (asCallBack.length>0)
+   {
+      if (exists(asCallBack))
+      {
+         //let the callback routine process the as selection criteria
+         var command = asCallBack+"(asControl,asTypes,asCriteria)";
+         eval( command );
+      }
+      else
+      {
+         //specified callback does not exist
+         alert("returnFromAS:  ERROR -- Specified controlCallBack '"+asCallBack+"' does not exist."+
+               "\n\nCannot return the '"+asTypes+"' selection criterion = "+asCriteria);
+      }
+   }
+   else
+   {
+      //just store the as results in the specified control
+      if (!setASElementValue(asControl, asCriteria))
+      {
+         alert("returnFromAS:  ERROR -- Attempt to save the selection criterion in control '"+asControl+"' failed."+
+         "\n\nCannot return the '"+asTypes+"' selection criterion = "+asCriteria);
+      }
+   }
+}
+
+//search all forms for the specified named element and return its value
+function getASElementValue(elementName)
+{
+   if (elementName!=null && elementName.length>0)
+   {
+      for (var i=0; i<document.forms.length; i++)
+      {
+         if (document.forms[i].elements[elementName]!= null)
+         {
+            return document.forms[i].elements[elementName].value;
+         }
+      }
+   }
+   return null;
+}
+
+//search all forms for the specified named element and set its value
+function setASElementValue(elementName, elementValue)
+{
+   if (elementName!=null && elementName.length>0)
+   {
+      for (var i=0; i<document.forms.length; i++)
+      {
+         if (document.forms[i].elements[elementName]!= null)
+         {
+            document.forms[i].elements[elementName].value = elementValue;
+            return true;
+         }
+      }
+   }
+   return false;
+}                                                               DOWNLOADS\LIVETRI.ZIP\CONTENT-LENGTH=126358
+DOWNLOADS\LIVETRI.ZIP\LAST-MODIFIED=Fri, 14 Nov 2003 04:28:12 GMT
+DOWNLOADS\LIVETRI.ZIP\LOCALPATH=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate\Downloads\livetri.zip
+DOWNLOADS\LIVETRI.ZIP\SERVER=liveupdate.symantecliveupdate.com
+DOWNLOADS\LIVETRI.ZIP\SERVERPATH=/livetri.zip
+DOWNLOADS\LIVETRI.ZIP\STATUS=Complete
+HOSTS\0\ACCESS=liveupdate.symantecliveupdate.com
+HOSTS\0\ACCESS2=http://liveupdate.symantecliveupdate.com
+HOSTS\0\IS_SYMANTEC:ENC=N%9-U,&[>@M
+HOSTS\0\LOGIN:ENC=YBR#A%5\(CI
+HOSTS\0\NAME=liveupdate.symantecliveupdate.com
+HOSTS\0\PASSWORD:ENC=YBR#A%5\(CI
+HOSTS\0\SUBNET=0.0.0.0
+HOSTS\0\SUBNETMASK=0.0.0.0
+HOSTS\0\TYPE=HTTP
+HOSTS\1\ACCESS=liveupdate.symantec.com
+HOSTS\1\ACCESS2=http://liveupdate.symantec.com
+HOSTS\1\IS_SYMANTEC:ENC=N%9-U,&[>@M
+HOSTS\1\LOGIN:ENC=YBR#A%5\(CI
+HOSTS\1\NAME=liveupdate.symantec.com
+HOSTS\1\PASSWORD:ENC=YBR#A%5\(CI
+HOSTS\1\SUBNET=0.0.0.0
+HOSTS\1\SUBNETMASK=0.0.0.0
+HOSTS\1\TYPE=HTTP
+HOSTS\2\ACCESS=update.symantec.com/opt/content/onramp
+HOSTS\2\ACCESS2=ftp://update.symantec.com/opt/content/onramp
+HOSTS\2\IS_SYMANTEC:ENC=N%9-U,&[>@M
+HOSTS\2\LOGIN:ENC=V!0QDU7."^$C(%+!24M?+A
+HOSTS\2\NAME=update.symantec.com
+HOSTS\2\PASSWORD:ENC=L"`';1^I=[DC(%+!24M?+A
+HOSTS\2\SUBNET=0.0.0.0
+HOSTS\2\SUBNETMASK=0.0.0.0
+HOSTS\2\TYPE=FTP
+HOSTS\NUM_HOSTS=3
+INSTALL_FOLDER=C:\PROGRA~1\Symantec\LIVEUP~1
+LEGACY_INSTALL_FOLDER=C:\Program Files\Symantec\LiveUpdate
+PER_MACHINE_FOLDER=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate
+PREFERENCES\ALL TRANSPORTS AVAILABLE=YES
+PREFERENCES\CORPORATE_MODE=YES
+PREFERENCES\LAN_HAL_PRESENT=YES
+PREFERENCES\LOGEVENTS=1
+PREFERENCES\LOG_BACKUPCOUNT=3
+PREFERENCES\LOG_FILE_NAME=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate\Log.LiveUpdate
+PREFERENCES\PRODUCT_CATALOG_BACKUPCOUNT=3
+PREFERENCES\PROXY\USE_IE_PROXY=TRUE
+PREFERENCES\SETTINGS_FILE_BACKUPCOUNT=3
+PREFERENCES\USEPASSIVEFTPMODE=1
+PREFERENCES\WORKINGDIRECTORY=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate\Downloads
+PRODUCT_CATALOG_FILE=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate\Product.Catalog.LiveUpdate
+SETTINGS_FILE=C:\Documents and Settings\All Users\Application Data\Symantec\LiveUpdate\Settings.LiveUpdate
+                                                                                                                                                                                                            SYMC   g                    Æ      3   |  g   _        óÓÜ*Rþ6    ô†ž .š  óÓÜ:ýÂR    Ýˆ<g  óÓÜ{HÔ˜    Ã·Á%š  ;X`žð    ¾2Âé+š  ÐÕÛv_    Ý”$Gš  ] J ŒÎû    ŠòES)š  ] J üQm    ³Qf‚X  ] J Ÿ    †}ƒ©‘  ] J 	¡     wH†½‚X  ] J Þƒ§)    ÏüKBš  ] J ­ãé3    ¸ëÌû©‘  ] J Å‚”5    úÇÑ  ] J r/’=    Ë8qš  ] J ôÇ<>    _žod…  ] J ‰ÀÌ[    @æ|Pš  ] J ~q0n    3yÑ  ] J ð'æ‹    R
+{Y:š  ] J ¦	š    z¨š  ] J ºru¥    ¡F¥kJg  ] J  q¡«    âÄú˜1š  ] J fbÑÆ    é(¥p9W  ] J c‘Ç    éâŸ`š  ] J Šb2ç    ƒÄ†w…  ] J PÔë    ÕÅ&_™  ] J H¦ì     Éê6‚X  ] J þïÛõ    À¿az'š  ˜6i$@~    ³âèš  Áˆ/&&ˆ    hQ³CT™  Áˆ/&ÃwT    çå›ÖŽ  Áˆ/&$J¿    •:Û”•  Áˆ/&û"ä    !ïš  Áˆ/&Cnv    T%»,š  Áˆ/&G~…    ƒ‚Ü¸Pg  Áˆ/&¦‹«(    ”éº1µ‘  Áˆ/&É¥%+     0¿¨  Áˆ/&u;\7    Ÿýþ±£  Áˆ/&V<U>    ?uò×Ž  Áˆ/&×£B    Æåk™  Áˆ/&+%ŠD    ¿$à@š  Áˆ/&º–E    t'³`™  Áˆ/&µ_AU    [ZOš  Áˆ/&ù™×[    ‹\ xš  Áˆ/&¯oa    *9Mµ=  Áˆ/&1Œh    ÌùýL!š  Áˆ/&×Ôj    –2øš  Áˆ/&»Å†€    ¹Z}ßŽ  Áˆ/&K‹ž‹    +‚ÈãT™  Áˆ/&YŽp‘    Ãú††Pg  Áˆ/&;“    íÌÞÚµ‘  Áˆ/&šm    ÉYŒ˜š  Áˆ/&šm    pç`úš  Áˆ/&Íyê¼    ív•š  Áˆ/&LÅÇ    ïOÊ{…  Áˆ/&Á*-Ñ    eÕÙ9^™  Áˆ/&_1Bã    °¼3{g…  Áˆ/&Ièô    ·€6Ã
+š  Áˆ/&Ièô    2‹eø
+š  Áˆ/&Ièô    fPmú
+š  ½C2$ú½    ;.’;Dš  ½C2]ûH    þ!/š  ½C23ÁR    ~¾˜š  ½C2ÿÞR     u‘J;š  ½C2H/    —ŸW0;š  ½C2Š³ò1    Å+©‘  ½C2-èB    µþ0t%š  ½C2œÁG    †ëAš  ½C2c [    ¤ž#5=  ½C2I}g    ¬¶uíCš  ½C2¢Ïqi    ¡¢hˆ  ½C2Yøm    „>îUhˆ  ½C2å&—q    m‘¸|š  ½C2º”3v    ”Xxš©‘  ½C2Øø{    ßš  ½C2°4Â‚    ©÷#š  ½C2‰Öƒ    vÚ)¿hˆ  ½C2!/Ö‰    Ñ”/š  ½C2û¹h“    ©‚í©‘  ½C2v&
+     ¦‡˜¯„  ½C2f•Ã¶    ®²¦rš  ½C2H?ìÀ    Èèÿæ=  ½C2dîÀ    {Í©‘  ½C2RõiÍ    4ôè=  ½C2´éOú    OG
+7/š  MÃp7Èý!  Èâ2š  MÃp7Ì²m  c¶?š  MÃp7Ä×°ê&  ¿œ—/š  ©C²’y,    YÚ¸£  öÊ·JÎu"    è>¿Ž  Îß	N    †  ?Œ)š  ÂYP¸ƒü,   ÿ6;”—  l„ÅWReÅ	    qÚûi¯„  l„ÅWLw­    :õ«=  l„ÅWÃù–*    \‘™œ4š  l„ÅWøZ3    xKÇ   l„ÅWÏgúP    0
+	$ š  l„ÅW“ùW    ¤¤%Hg  l„ÅW>ÚQ`    Ù:Ÿè/š  l„ÅWØ¡d    ^«¿Jš  l„ÅWÂ
+:›    Úƒa„Lš  l„ÅW»>2œ    GÔ­J4š  l„ÅWÌzñ®    çIæ.š  l„ÅW0VÓË    ©{«Iš  l„ÅWÛÂÌ    †Â)>Kš  l„ÅW£kÒÜ    ð‹ÙEEš  l„ÅWMHç    eøHš  ,÷X–ÓHÍ[@  L”Pš  È¼ù`çeCüK Ø§Ðš  È¼ù`çeCM !nòûš  È¼ù`òA & - º^I–  È¼ù`YI€e " €ˆãºš  "TZbE•-    XÀ…=š  "TZb ±	    =Ìõš  "TZbÅ*%    Ã(1=  "TZby­    š›Eƒ™  "TZbãÜá    òüÌ=  "TZbµL(    ¶Zw¦>š  "TZbÑc©)    ³@…‰š  "TZb¤RG    ‚í*ç™  "TZb‚M    ‹µþKš  "TZb«ƒP    ¦'š  "TZb}-®W    *IÝÏŽ  "TZbWm“s    |½ýÑ×Ž  "TZb&Ô¸x    ¶²ÒŠUg  "TZb\.{    ¥¡`Ûhˆ  "TZb'™1…    2¢žWš  "TZb#Üí‡    Q•²5š  "TZb®rÀŒ    lx®Æ=  "TZbÍäQ    äu =  "TZbt‰Þ•    GqåŒhˆ  "TZbÃûÏ˜    oW}VŸ  "TZb„Šæš    E
+ûj=  "TZb,L    Z©Å6š  "TZbçÊ1     µO)èš  "TZb–µÇ¶    ž…Ï9š  "TZbA~‚Í    N}ŒO=  "TZbUTÑ    P?ÿœ¬„  "TZb/¦Ô    }tKrz…  "TZbáê¥ç    ›úaj™  "TZbáê¥ç    ›úaj™  "TZbÿ‘þé     p‹š  "TZb’ûô    WÈî÷.š  "TZbq#rø    ç†—š  ,Æl¦ÈãS    „Ên.š  ÂWSpjË    Ô@È/š  ÂWSp§­    ì:œœ  ÂWSp¾dË*    ³0DAš  ÂWSpèÖ 7    Ïž[Öš  ÂWSpÛ£j:    äáËT=  ÂWSpåê<    þ…~Zd…  ÂWSpQº>    ?n6š  ÂWSpùÌ´A    Ý'f‹š  ÂWSp NäK    ]´û)«  ÂWSp¶þUP    /Íÿ“>g  ÂWSpa|0Q    ÊÒÀ4-š  ÂWSpnM“[    .=.=©‘  ÂWSpóúXk    9¿U/š  ÂWSpÔ÷À€    çGG©‘  ÂWSpŸ}    “7Ïxd…  ÂWSp¬`Ÿ“    ‘ÕD™  ÂWSp‹ƒ–    ZÔñ¢š  ÂWSpún˜    2™ëç/š  ÂWSpKÑÍ›    Wÿ„Ôkˆ  ÂWSpæ)Kž    ½4ŠŽ/š  ÂWSpèú§¦    ¬Oÿ‚/š  ÂWSpæL–µ    ð¼ÁQ;š  ÂWSpmÉ>·    ®¼Â•©‘  ÂWSpmÉ>·    ®¼Â•©‘  ÂWSp¾sÛ½     ÂR63š  ÂWSp¶ˆÈ    îrfâš  ÂWSpÊ?AÌ    p—q/š  ÂWSp;?èØ    µ(¨Õ@g  ÂWSp´Œâí    «sx©‘  ÂWSp{Vñ    ]Qýë/š  ÂWSpþ¼ õ    áP/@š  ÂWSpÈÖäû    A¹K	)š  c¯x€eùÅm    X1“2š  ƒ¬q’ Œx    ¥hU"=  ƒ¬q’ƒÆT	    sÐÂ$Bš  ƒ¬q’Nì    0Y+k"=  ƒ¬q’›a    ù´M¢¢  ƒ¬q’%ú¹    “¼†#š  ƒ¬q’»XrH    &ùPHg  ƒ¬q’_Œ8W    ©Ç…é
+=  ƒ¬q’HÚeW    ¥ŸÙ£Ñ  ƒ¬q’¿Q_X    ½hã,š  ƒ¬q’²‹yh    æý÷­g…  ƒ¬q’ÇÑ£q    ì¸”"š  ƒ¬q’SŠÈ    P/š  ƒ¬q’÷Q€    \ˆ`R"=  ƒ¬q’V>‡    >Õãš  ƒ¬q’PÙÆŠ    ½ÜÍ‘¸‘  ƒ¬q’‰Bh—    ?ës—ÁŽ  ƒ¬q’ª¢    o¸ê=Tg  ƒ¬q’)Ðˆ¹    ¯(O)™  ƒ¬q’íÑ    |é”=  ƒ¬q’ËöÑ     oRyBš  ƒ¬q’iEÕ    ›*Úš  ƒ¬q’ÎºIå    xM¾š  ƒ¬q’ãð–æ    gèJ­€X  ƒ¬q’îØò    Ôz`>š  ƒ¬q’}«šù    \GÍîš  ƒ¬q’!Cþ    óq q˜  °ëmšÒC‰8    "Ù+(+š  Î‹Èœ8     ÂRŽZ™  Î‹ÈœÜS­    ì¢š  Î‹Èœ`L    }ì_Òi…  Î‹Èœõ &    qGî-W  Î‹Èœª¢1    ka³à	š  Î‹ÈœCO6    ]3ã¿Ž  Î‹Èœ[Ôv7    6pÉ&Fg  Î‹Èœçù}7    n-5©  Î‹Èœ‹bý9    ×†7˜  Î‹Èœ(N    ’'ßYš  Î‹Èœ˜˜NO    B‡Xúˆ…  Î‹Èœ’˜‘^    +›`-W  Î‹ÈœOÍe    ŸÑÆˆ=  Î‹Èœœ,‡    +5¤‘  Î‹ÈœS=_À    Ù‰¾™Ÿ  Î‹Èœ(Å    Gh7š  Î‹Èœ‰õ×    ~`tÙZ™  Í|î§ˆ|Ÿ     †tš  Í|î§„„h    KòñŸ  Í|î§¨Z­    ZBï
+=  Í|î§`Ñ    ^ëFG¡  Í|î§	H‘    Š'$š  Í|î§s«#    «ÂÐŽ—  Í|î§6}Û'    ¬¦«=  Í|î§(Ñ±9    zêwW=  Í|î§tC<    lúã,š  Í|î§¦ËÏ@    ¸Î ò©  Í|î§¼XYP    j’4W  Í|î§¼XYP    Ÿ4oÕ4W  Í|î§hJs    m
+8(4W  Í|î§hJs    ƒÑã}4W  Í|î§Xh¡    >­® š  Í|î§(ØÛ£    ªVâº š  Í|î§³nv§    )G:•  Í|î§œ¹    ¸Í%	
+=  Í|î§·~V½    ªF”  Í|î§÷ã6Ñ    ÄWŽ1W  Í|î§|ÚÒ    ·Á|ªÑ  Í|î§_>\Ô    ­Sg  Í|î§¬¨YÖ    HúÔŽü—  Í|î§*Q’õ    ô—~
+=  Í|î§¢_÷    :{?¹
+=  €[W©¢×”    ÅTª%š  €[W©ño¿    uoæ“  €[W©Po©J    ¹ý¿=  €[W©–b    M,æš  €[W©S[0{    )›©/Š…  €[W©[¿‰Í    @¸V=  -çµ(¥ä
+    LjAš  -çµ_*´    Z4ÕË1š  -çµ¬-‡    e#qxEg  -çµ²    'ø—¬š  -çµ¹    ì°G/š  -çµNiÏ     `Çoš  -çµ™ø‚0    ÏLÆšü—  -çµ™ø‚0    ÏLÆšü—  -çµ å:    y'Kp…  -çµ9»½G    &
+n$š  -çµêšÝH    g‡[[š  -çµºô©M    Yt‰)Bš  -çµµÇf    ¶|>€)š  -çµý!Æz    ìv;­"š  -çµˆ‚    >à¥x/š  -çµöfîÄ    ˜*A†  -çµ‡A¬Ü    %¯¢š  -çµ*K´ã    ^@‰\)š  -çµ<¸cï    “Æþ_™  -çµþrgñ    äÁŽÐ‚X  -çµ¦'hó    ¹óZ]š  -çµFw­õ    1§* =  y^hÁÿ˜Ã    Á®vç+š  ûhÂÊØ    Oœ€÷Î  ûhÂjÕÑ#    ™b|DÎ  ûhÂÎË!^    ñœiy…  ûhÂ«˜[r    ã±R%š  ûhÂ,œ¤…    SkÆÎ  ûhÂ$8Î    Îe¦Õƒ…  ûhÂ®›Aª    ,jhÊ%š  ûhÂtÚð¸    …g!Ÿ  ûhÂs¨'Ä    ½’Œ  ûhÂÓ 'Ñ    2a.š  ûhÂ&8QÔ    HÊÝ„%š  ûhÂ½/£Ú    °/š  ûhÂA0và    ³î'ã,š  ûhÂA0và    ³î'ã,š  ûhÂ ü»æ    æV$‘  ûhÂ{]ü    þÍ[ú.š  üøaÐ˜Ï‰D    iºHš  üøaÐÞzóJ    Æzœ„™  üøaÐðY    ÈJÙBš  üøaÐß#×d    Ñ×»Ig  üøaÐÛK“°    ž¼Ïy/W  üøaÐ†¬Rô    m_Ì†ª‘  üøaÐ™:˜ö    Dzáêš  ³?ÑÔeã—    YbDè+š  ó~ Õ    t„  ¡]›'š  T+\ÜÖþ½    V5?+š  á^aå    ô   w”à*š  ²(þå±õb    	I—‚X  ²(þå
+$r    |ðåGš  ²(þåÒ&'    äŒ`§d…  ²(þå3©)    Â\5š  ²(þåÿYSI    ‚N¦z©‘  ²(þåâO†¿    ÓY× Œ  ²(þåÌÖâÛ    æLÃÕ‚X  ²(þåñå    }2üâ|™  ²(þåGþkê    êÃS©‘  R+÷÷¾,h    ì@Â/š  R+÷÷±#Û    *1,²Aš  R+÷÷½
+    %Ö¶™°„  R+÷÷®C
+    ÐvÜPš  R+÷÷å     %WØ¡š  R+÷÷ºV™     :¾%š  R+÷÷ÍŸ¶    ¼Ùmf…  R+÷÷²¾    (%~q…  R+÷÷²¾    nckØq…  R+÷÷x&    ©GÆõ?š  R+÷÷ÍºÆ.    0çI*š  R+÷÷yð5/    §™Rg  R+÷÷äKk?    úãˆš  R+÷÷:Š?    ¾‰wX™  R+÷÷›ZTG    rÎLf…  R+÷÷l…¯O    ÝƒBF¾‘  R+÷÷}ïëW    ²Ž‘š  R+÷÷Î`    –E`>š  R+÷÷ÈYg    O¶è=š  R+÷÷
+Ñh    quY±Gg  R+÷÷Þ†‚    =WNŸ,W  R+÷÷Š¯+‡    aÔ ƒš  R+÷÷Ë¦    µ¬^­Aš  R+÷÷»8    o$I"š  R+÷÷¹¦—    FK°“"š  R+÷÷xv™    añ­o0š  R+÷÷y2Œœ    )gaadˆ  R+÷÷¨”ž    ¯›¯M'š  R+÷÷0°Ì¤    /«ç<Cš  R+÷÷5„b³    šõ‘X™  R+÷÷Œ¡´    pPâ %š  R+÷÷¿‚"¾    "JÅ š  R+÷÷>¾    Žsú‘;š  R+÷÷+Ð£Ã    uuX  R+÷÷ÜîýÄ    ¯0na(š  R+÷÷EµÓ    ™äÏ¢  R+÷÷ÿÏ*Ý    q»`7š  R+÷÷WÖõÞ    ëZ×ÛÑ  R+÷÷ãKå    l@ôš  R+÷÷£Fò    <£¡óª„  R+÷÷Öªs÷    Ûtòíš                                                                                   

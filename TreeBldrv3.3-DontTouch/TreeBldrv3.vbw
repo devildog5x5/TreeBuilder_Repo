@@ -1,0 +1,6 @@
+frmOptions = 21, 107, 950, 720, , 257, 50, 970, 716, C
+BrowseDirectorysOnly = 74, 34, 961, 706, C
+ICE = 57, 81, 984, 738, C, 226, 147, 973, 780, C
+DoesFileExist = 24, 69, 995, 753, C
+QuickSTart = 53, 88, 960, 811, C, 372, 120, 731, 560, C
+InstCleaner = 20, 115, 909, 923, C, 51, 65, 357, 326, C
